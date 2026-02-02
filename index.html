@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>名古屋小車車之旅 🚗</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Zen Maru Gothic"', 'sans-serif'],
+                    },
+                    colors: {
+                        'car-blue': '#A0E8AF',
+                        'car-pink': '#FFC4D6',
+                        'car-yellow': '#FFEF96',
+                        'car-bg': '#FDFBF7',
+                        'car-dark': '#4A6C6F',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F0F4F8; color: #4A6C6F; -webkit-tap-highlight-color: transparent; }
+        .app-container { max-width: 480px; margin: 0 auto; background-color: #FDFBF7; min-height: 100vh; padding-bottom: 80px; box-shadow: 0 0 20px rgba(0,0,0,0.05); position: relative; }
+        .card { background: white; border-radius: 20px; box-shadow: 4px 4px 0px rgba(74, 108, 111, 0.1); border: 2px solid #E5E7EB; transition: transform 0.1s; }
+        .card:active { transform: scale(0.98); }
+        .btn-cute { background-color: #A0E8AF; color: #4A6C6F; border-radius: 999px; font-weight: bold; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .nav-item.active i { background-color: #A0E8AF; color: white; box-shadow: 0 4px 10px rgba(160, 232, 175, 0.5); }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header class="sticky top-0 z-50 bg-car-bg/95 backdrop-blur-sm px-6 py-4 border-b-2 border-dashed border-gray-200 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-car-dark flex items-center gap-2">
+                <i class="fa-solid fa-car-side text-car-blue"></i> 名古屋 GO!
+            </h1>
+            <p class="text-xs text-gray-400">Five Days Trip 🇯🇵</p>
+        </div>
+        <div class="text-right">
+            <span id="header-weather" class="text-sm font-bold text-car-pink">Loading...</span>
+        </div>
+    </header>
+
+    <main id="main-content" class="p-4"></main>
+
+    <nav class="fixed bottom-0 left-0 w-full bg-white border-t-2 border-gray-100 z-50 pb-safe">
+        <div class="max-w-[480px] mx-auto flex justify-around items-center py-3">
+            <button onclick="switchTab('plan')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-plan">
+                <i class="fa-solid fa-map-location-dot w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
+                <span class="text-xs font-bold">行程</span>
+            </button>
+            <button onclick="switchTab('guide')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-guide">
+                <i class="fa-solid fa-book-open w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
+                <span class="text-xs font-bold">導覽</span>
+            </button>
+            <button onclick="switchTab('wallet')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-wallet">
+                <i class="fa-solid fa-wallet w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
+                <span class="text-xs font-bold">記帳</span>
+            </button>
+            <button onclick="switchTab('lists')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-lists">
+                <i class="fa-solid fa-clipboard-check w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
+                <span class="text-xs font-bold">清單</span>
+            </button>
+            <button onclick="switchTab('info')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-info">
+                <i class="fa-solid fa-circle-info w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
+                <span class="text-xs font-bold">資訊</span>
+            </button>
+        </div>
+    </nav>
+</div>
+
+<script>
+    // --- Data: 更新後的正確地圖連結 ---
+    const itineraryData = [
+        {
+            day: "Day 1", date: "抵達名古屋", color: "bg-blue-50",
+            events: [
+                { time: "10:00", title: "中部國際機場抵達", desc: "領取行李、購買 μ-SKY 車票", type: "transport", highlight: true },
+                { time: "12:00", title: "名古屋站", desc: "享用矢場味增豬排", link: "https://www.google.com/maps/search/?api=1&query=矢場とん+名古屋駅", linkText: "餐廳地圖" },
+                { time: "14:00", title: "飯店 Check-in", desc: "寄放行李，稍作休息", type: "stay" },
+                { time: "16:00", title: "榮商圈 (Sakae)", desc: "綠洲21、電視塔拍照、Donki 採購", link: "https://www.google.com/maps/search/?api=1&query=Oasis+21", linkText: "開啟地圖" },
+                { time: "19:00", title: "世界的山將", desc: "必吃夢幻手羽先 (雞翅)", link: "https://www.google.com/maps/search/?api=1&query=世界の山ちゃん", linkText: "找分店", type: "food" }
+            ]
+        },
+        {
+            day: "Day 2", date: "吉卜力大倉庫", color: "bg-green-50",
+            events: [
+                { time: "09:00", title: "包車出發", desc: "飯店大廳集合", type: "gathering", highlight: true },
+                { time: "10:30", title: "吉卜力公園", desc: "大倉庫區入場", link: "https://www.google.com/maps/search/?api=1&query=Ghibli+Park", linkText: "官方地圖" },
+                { time: "15:00", title: "大須觀音商店街", desc: "古著店、鯛魚燒", link: "https://www.google.com/maps/search/?api=1&query=大須商店街", linkText: "商店街地圖", type: "shop" }
+            ]
+        },
+        {
+            day: "Day 3", date: "合掌村一日遊", color: "bg-orange-50",
+            events: [
+                { time: "11:00", title: "白川鄉合掌村", desc: "漫步童話村落", link: "https://www.google.com/maps/search/?api=1&query=Shirakawa-go", linkText: "查看地圖" },
+                { time: "15:00", title: "高山老街", desc: "飛驒牛壽司", link: "https://www.google.com/maps/search/?api=1&query=Sanmachi+Suji", linkText: "老街地圖", type: "food" }
+            ]
+        },
+        {
+            day: "Day 4", date: "樂高樂園", color: "bg-yellow-50",
+            events: [
+                { time: "10:00", title: "樂高樂園", desc: "適合拍照、買積木", link: "https://www.google.com/maps/search/?api=1&query=LEGOLAND+Japan", linkText: "園區地圖" }
+            ]
+        },
+        {
+            day: "Day 5", date: "滿載而歸", color: "bg-purple-50",
+            events: [
+                { time: "10:00", title: "熱田神宮", desc: "購買御守", link: "https://www.google.com/maps/search/?api=1&query=Atsuta+Jingu", linkText: "地圖導覽", type: "spot" },
+                { time: "12:00", title: "蓬萊軒", desc: "鰻魚飯三吃", link: "https://www.google.com/maps/search/?api=1&query=Atsuta+Houraiken", linkText: "本店地圖", type: "food" }
+            ]
+        }
+    ];
+
+    // --- 初始化與切換邏輯 (已修正手機空白問題) ---
+    function renderPlan() {
+        let html = `<div class="space-y-6 pb-20">`;
+        itineraryData.forEach((day) => {
+            html += `
+                <div class="card overflow-hidden">
+                    <div class="${day.color} px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+                        <span class="font-bold text-lg text-car-dark">${day.day}</span>
+                        <span class="text-sm font-bold bg-white px-3 py-1 rounded-full shadow-sm">${day.date}</span>
+                    </div>
+                    <div class="p-4 relative">
+                        <div class="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200"></div>
+                        <div class="space-y-6">`;
+            day.events.forEach(event => {
+                html += `
+                    <div class="relative pl-8 p-2">
+                        <div class="absolute left-0 top-1 w-4 h-4 rounded-full bg-white border-2 border-car-blue z-10 text-[10px] flex items-center justify-center">
+                            <i class="fa-solid fa-circle"></i>
+                        </div>
+                        <div class="flex justify-between items-start">
+                            <span class="font-bold text-car-dark text-lg">${event.time}</span>
+                            ${event.link ? `<a href="${event.link}" target="_blank" class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-md">地圖</a>` : ''}
+                        </div>
+                        <h3 class="font-bold text-gray-700">${event.title}</h3>
+                        <p class="text-sm text-gray-500 mt-1">${event.desc}</p>
+                    </div>`;
+            });
+            html += `</div></div></div>`;
+        });
+        document.getElementById('main-content').innerHTML = html + `</div>`;
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active', 'text-car-dark'));
+        const activeBtn = document.getElementById(`nav-${tabName}`);
+        if (activeBtn) activeBtn.classList.add('active', 'text-car-dark');
+        
+        if (tabName === 'plan') renderPlan();
+        else document.getElementById('main-content').innerHTML = `<div class="p-10 text-center text-gray-400">功能開發中...</div>`;
+    }
+
+    // 關鍵修正：確保網頁一載入就顯示內容
+    document.addEventListener('DOMContentLoaded', () => {
+        switchTab('plan');
+        document.getElementById('header-weather').innerText = "☀️ 18°C";
+    });
+</script>
+</body>
+</html>
