@@ -3,170 +3,406 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>名古屋小車車之旅 🚗</title>
+    <title>名古屋·柚子生日之旅 ✈️</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mochiery+Pop+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Zen Maru Gothic"', 'sans-serif'],
-                    },
-                    colors: {
-                        'car-blue': '#A0E8AF',
-                        'car-pink': '#FFC4D6',
-                        'car-yellow': '#FFEF96',
-                        'car-bg': '#FDFBF7',
-                        'car-dark': '#4A6C6F',
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #F0F4F8; color: #4A6C6F; -webkit-tap-highlight-color: transparent; }
-        .app-container { max-width: 480px; margin: 0 auto; background-color: #FDFBF7; min-height: 100vh; padding-bottom: 80px; box-shadow: 0 0 20px rgba(0,0,0,0.05); position: relative; }
-        .card { background: white; border-radius: 20px; box-shadow: 4px 4px 0px rgba(74, 108, 111, 0.1); border: 2px solid #E5E7EB; transition: transform 0.1s; }
-        .card:active { transform: scale(0.98); }
-        .btn-cute { background-color: #A0E8AF; color: #4A6C6F; border-radius: 999px; font-weight: bold; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .nav-item.active i { background-color: #A0E8AF; color: white; box-shadow: 0 4px 10px rgba(160, 232, 175, 0.5); }
+        :root {
+            --primary-pink: #FFC2D1;
+            --secondary-pink: #FFE5EC;
+            --accent-blue: #B9E9FF;
+            --accent-yellow: #FFF4BD;
+            --text-color: #714E60;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--secondary-pink);
+            color: var(--text-color);
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+
+        h1, h2, h3, .font-cute {
+            font-family: 'Mochiery Pop One', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 3px solid white;
+            border-radius: 2rem;
+            box-shadow: 0 8px 15px rgba(255, 194, 209, 0.3);
+        }
+
+        .btn-cute {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 1rem;
+        }
+
+        .btn-cute:active {
+            transform: scale(0.9);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Timeline style */
+        .timeline-item { position: relative; padding-left: 2rem; border-left: 3px dashed var(--primary-pink); }
+        .timeline-item::before {
+            content: '●';
+            position: absolute;
+            left: -11px;
+            color: var(--primary-pink);
+            background: var(--secondary-pink);
+            font-size: 20px;
+        }
+
+        .important-tag {
+            background: #FF85A1;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
-<body>
+<body class="max-w-md mx-auto">
 
-<div class="app-container">
-    <header class="sticky top-0 z-50 bg-car-bg/95 backdrop-blur-sm px-6 py-4 border-b-2 border-dashed border-gray-200 flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl font-bold text-car-dark flex items-center gap-2">
-                <i class="fa-solid fa-car-side text-car-blue"></i> 名古屋 GO!
-            </h1>
-            <p class="text-xs text-gray-400">Five Days Trip 🇯🇵</p>
-        </div>
-        <div class="text-right">
-            <span id="header-weather" class="text-sm font-bold text-car-pink">Loading...</span>
-        </div>
+    <header class="p-6 text-center">
+        <h1 class="text-2xl text-[#FF85A1]">名古屋慶生趣 🎂</h1>
+        <p class="text-xs opacity-70">2026.02.04 - 柚子與親友們</p>
     </header>
 
-    <main id="main-content" class="p-4"></main>
-
-    <nav class="fixed bottom-0 left-0 w-full bg-white border-t-2 border-gray-100 z-50 pb-safe">
-        <div class="max-w-[480px] mx-auto flex justify-around items-center py-3">
-            <button onclick="switchTab('plan')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-plan">
-                <i class="fa-solid fa-map-location-dot w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
-                <span class="text-xs font-bold">行程</span>
-            </button>
-            <button onclick="switchTab('guide')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-guide">
-                <i class="fa-solid fa-book-open w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
-                <span class="text-xs font-bold">導覽</span>
-            </button>
-            <button onclick="switchTab('wallet')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-wallet">
-                <i class="fa-solid fa-wallet w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
-                <span class="text-xs font-bold">記帳</span>
-            </button>
-            <button onclick="switchTab('lists')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-lists">
-                <i class="fa-solid fa-clipboard-check w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
-                <span class="text-xs font-bold">清單</span>
-            </button>
-            <button onclick="switchTab('info')" class="nav-item flex flex-col items-center gap-1 text-gray-400 w-1/5 transition-all" id="nav-info">
-                <i class="fa-solid fa-circle-info w-10 h-10 flex items-center justify-center rounded-full text-lg"></i>
-                <span class="text-xs font-bold">資訊</span>
-            </button>
-        </div>
-    </nav>
-</div>
-
-<script>
-    // --- Data: 更新後的正確地圖連結 ---
-    const itineraryData = [
-        {
-            day: "Day 1", date: "抵達名古屋", color: "bg-blue-50",
-            events: [
-                { time: "10:00", title: "中部國際機場抵達", desc: "領取行李、購買 μ-SKY 車票", type: "transport", highlight: true },
-                { time: "12:00", title: "名古屋站", desc: "享用矢場味增豬排", link: "https://www.google.com/maps/search/?api=1&query=矢場とん+名古屋駅", linkText: "餐廳地圖" },
-                { time: "14:00", title: "飯店 Check-in", desc: "寄放行李，稍作休息", type: "stay" },
-                { time: "16:00", title: "榮商圈 (Sakae)", desc: "綠洲21、電視塔拍照、Donki 採購", link: "https://www.google.com/maps/search/?api=1&query=Oasis+21", linkText: "開啟地圖" },
-                { time: "19:00", title: "世界的山將", desc: "必吃夢幻手羽先 (雞翅)", link: "https://www.google.com/maps/search/?api=1&query=世界の山ちゃん", linkText: "找分店", type: "food" }
-            ]
-        },
-        {
-            day: "Day 2", date: "吉卜力大倉庫", color: "bg-green-50",
-            events: [
-                { time: "09:00", title: "包車出發", desc: "飯店大廳集合", type: "gathering", highlight: true },
-                { time: "10:30", title: "吉卜力公園", desc: "大倉庫區入場", link: "https://www.google.com/maps/search/?api=1&query=Ghibli+Park", linkText: "官方地圖" },
-                { time: "15:00", title: "大須觀音商店街", desc: "古著店、鯛魚燒", link: "https://www.google.com/maps/search/?api=1&query=大須商店街", linkText: "商店街地圖", type: "shop" }
-            ]
-        },
-        {
-            day: "Day 3", date: "合掌村一日遊", color: "bg-orange-50",
-            events: [
-                { time: "11:00", title: "白川鄉合掌村", desc: "漫步童話村落", link: "https://www.google.com/maps/search/?api=1&query=Shirakawa-go", linkText: "查看地圖" },
-                { time: "15:00", title: "高山老街", desc: "飛驒牛壽司", link: "https://www.google.com/maps/search/?api=1&query=Sanmachi+Suji", linkText: "老街地圖", type: "food" }
-            ]
-        },
-        {
-            day: "Day 4", date: "樂高樂園", color: "bg-yellow-50",
-            events: [
-                { time: "10:00", title: "樂高樂園", desc: "適合拍照、買積木", link: "https://www.google.com/maps/search/?api=1&query=LEGOLAND+Japan", linkText: "園區地圖" }
-            ]
-        },
-        {
-            day: "Day 5", date: "滿載而歸", color: "bg-purple-50",
-            events: [
-                { time: "10:00", title: "熱田神宮", desc: "購買御守", link: "https://www.google.com/maps/search/?api=1&query=Atsuta+Jingu", linkText: "地圖導覽", type: "spot" },
-                { time: "12:00", title: "蓬萊軒", desc: "鰻魚飯三吃", link: "https://www.google.com/maps/search/?api=1&query=Atsuta+Houraiken", linkText: "本店地圖", type: "food" }
-            ]
-        }
-    ];
-
-    // --- 初始化與切換邏輯 (已修正手機空白問題) ---
-    function renderPlan() {
-        let html = `<div class="space-y-6 pb-20">`;
-        itineraryData.forEach((day) => {
-            html += `
-                <div class="card overflow-hidden">
-                    <div class="${day.color} px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-                        <span class="font-bold text-lg text-car-dark">${day.day}</span>
-                        <span class="text-sm font-bold bg-white px-3 py-1 rounded-full shadow-sm">${day.date}</span>
-                    </div>
-                    <div class="p-4 relative">
-                        <div class="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200"></div>
-                        <div class="space-y-6">`;
-            day.events.forEach(event => {
-                html += `
-                    <div class="relative pl-8 p-2">
-                        <div class="absolute left-0 top-1 w-4 h-4 rounded-full bg-white border-2 border-car-blue z-10 text-[10px] flex items-center justify-center">
-                            <i class="fa-solid fa-circle"></i>
-                        </div>
-                        <div class="flex justify-between items-start">
-                            <span class="font-bold text-car-dark text-lg">${event.time}</span>
-                            ${event.link ? `<a href="${event.link}" target="_blank" class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-md">地圖</a>` : ''}
-                        </div>
-                        <h3 class="font-bold text-gray-700">${event.title}</h3>
-                        <p class="text-sm text-gray-500 mt-1">${event.desc}</p>
-                    </div>`;
-            });
-            html += `</div></div></div>`;
-        });
-        document.getElementById('main-content').innerHTML = html + `</div>`;
-    }
-
-    function switchTab(tabName) {
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active', 'text-car-dark'));
-        const activeBtn = document.getElementById(`nav-${tabName}`);
-        if (activeBtn) activeBtn.classList.add('active', 'text-car-dark');
+    <main class="px-4">
         
-        if (tabName === 'plan') renderPlan();
-        else document.getElementById('main-content').innerHTML = `<div class="p-10 text-center text-gray-400">功能開發中...</div>`;
-    }
+        <section id="plan" class="tab-content active">
+            <div class="glass-card p-4 mb-6">
+                <h3 class="font-cute mb-3"><i class="fas fa-plane-departure mr-2"></i>航班資訊</h3>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="bg-white/50 p-2 rounded-xl">
+                        <p class="font-bold text-[#FF85A1]">去程 CX530</p>
+                        <p>11:30 TPE 🛫</p>
+                        <p>15:30 NGO 🛬</p>
+                    </div>
+                    <div class="bg-white/50 p-2 rounded-xl">
+                        <p class="font-bold text-[#FF85A1]">回程 CX531</p>
+                        <p>16:40 NGO 🛫</p>
+                        <p>18:50 TPE 🛬</p>
+                    </div>
+                </div>
+            </div>
 
-    // 關鍵修正：確保網頁一載入就顯示內容
-    document.addEventListener('DOMContentLoaded', () => {
-        switchTab('plan');
-        document.getElementById('header-weather').innerText = "☀️ 18°C";
-    });
-</script>
+            <div class="glass-card p-4 mb-6 bg-[#B9E9FF]/40">
+                <h3 class="font-cute mb-1"><i class="fas fa-hotel mr-2"></i>名古屋Garland Hotel</h3>
+                <p class="text-xs mb-2 italic">名古屋市中區榮3-9-6</p>
+                <a href="https://www.google.com/maps/search/?api=1&query=Garland+Hotel+Nagoya" target="_blank" class="text-xs bg-white px-3 py-1 rounded-full shadow-sm">
+                    <i class="fas fa-map-marked-alt mr-1"></i>Google Maps
+                </a>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="font-cute text-lg ml-2">D1 - 抵達與慶生</h3>
+                <div class="glass-card p-5 space-y-6">
+                    <div class="timeline-item">
+                        <p class="text-xs font-bold">15:30</p>
+                        <p>抵達中部國際機場 (NGO)</p>
+                    </div>
+                    <div class="timeline-item">
+                        <p class="text-xs font-bold text-red-400">17:30 <span class="important-tag">重要</span></p>
+                        <p>飯店 CHECK-IN</p>
+                    </div>
+                    <div class="timeline-item">
+                        <p class="text-xs font-bold">17:30-18:30</p>
+                        <p>Harbs ラシック店領蛋糕 🍰</p>
+                        <a href="https://www.google.com/maps/search/?api=1&query=HARBS+LACHIC" target="_blank" class="text-[10px] text-blue-400 underline">地圖導航</a>
+                    </div>
+                    <div class="timeline-item">
+                        <p class="text-xs font-bold">20:00</p>
+                        <p class="font-cute text-pink-500">飯店柚子慶生大會 🎊</p>
+                    </div>
+                </div>
+
+                <h3 class="font-cute text-lg ml-2 mt-6">D2 - 悠閒早餐</h3>
+                <div class="glass-card p-5">
+                    <div class="timeline-item">
+                        <p class="text-xs font-bold">08:00-09:00</p>
+                        <p>喫茶Bon Bon吃早餐 ☕</p>
+                        <p class="text-xs opacity-60">老派昭和風咖啡館，推薦厚吐司！</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="guide" class="tab-content">
+            <div class="glass-card p-6 mb-6">
+                <h2 class="font-cute text-xl text-[#FF85A1] mb-4">名古屋冷知識 💡</h2>
+                <div class="prose prose-pink">
+                    <p class="text-sm leading-relaxed mb-4">
+                        你知道嗎？名古屋人對「早餐」有一種執著！在名古屋的喫茶店，早上點一杯咖啡通常會「送」你吐司和水煮蛋，這就是著名的<b>「Morning Service」</b>。
+                    </p>
+                    <img src="https://images.unsplash.com/photo-1590333746431-157f2070386c?auto=format&fit=crop&w=400&q=80" class="rounded-2xl mb-4 shadow-md" alt="Coffee">
+                    <h3 class="font-cute text-lg mb-2">榮商圈 (Sakae)</h3>
+                    <p class="text-sm leading-relaxed">
+                        我們住的榮區是名古屋最繁華的地方。除了百貨公司，還有地標電視塔 (Mirai Tower) 和綠洲 21。
+                    </p>
+                </div>
+            </div>
+            
+            <div class="glass-card p-4 overflow-hidden">
+                <h3 class="font-cute mb-2 text-sm">📍 附近地圖</h3>
+                <iframe width="100%" height="250" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=136.897%2C35.165%2C136.915%2C35.175&layer=mapnik&marker=35.1687%2C136.9065" style="border: 1px solid #eee; border-radius: 1rem;"></iframe>
+            </div>
+        </section>
+
+        <section id="wallet" class="tab-content">
+            <div class="glass-card p-4 mb-6 bg-yellow-50/50">
+                <h3 class="font-cute mb-2">匯率換算 (1 JPY = 0.21 TWD)</h3>
+                <div class="flex flex-col gap-2">
+                    <input id="calc-input" type="text" placeholder="輸入算式 如: 500+200*3" class="w-full p-3 rounded-xl border-2 border-yellow-200 focus:outline-none focus:border-yellow-400">
+                    <div class="flex justify-between items-center px-2">
+                        <span id="calc-result" class="font-bold text-lg text-orange-500">≈ NT$ 0</span>
+                        <button onclick="calculate()" class="bg-orange-400 text-white px-6 py-2 rounded-xl btn-cute">計算</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 mb-6">
+                <h3 class="font-cute mb-3 text-sm text-[#FF85A1]">新增記帳 💰</h3>
+                <div class="space-y-3">
+                    <input id="exp-name" type="text" placeholder="品項名稱" class="w-full p-2 rounded-lg border border-pink-100 text-sm">
+                    <input id="exp-amount" type="number" placeholder="日幣金額" class="w-full p-2 rounded-lg border border-pink-100 text-sm">
+                    <div class="flex items-center gap-2">
+                        <label class="flex-1 bg-white border-2 border-dashed border-pink-200 p-2 rounded-lg text-center cursor-pointer text-xs">
+                            <i class="fas fa-camera mr-1"></i> 上傳照片
+                            <input id="exp-photo" type="file" accept="image/*" class="hidden" onchange="previewImage(this)">
+                        </label>
+                        <button onclick="addExpense()" class="bg-[#FF85A1] text-white px-4 py-2 rounded-xl text-sm btn-cute">儲存</button>
+                    </div>
+                    <img id="temp-preview" class="hidden w-20 h-20 object-cover rounded-lg border shadow-sm">
+                </div>
+            </div>
+
+            <div id="expense-list" class="space-y-3">
+                </div>
+        </section>
+
+        <section id="lists" class="tab-content">
+            <div class="glass-card p-5 mb-6">
+                <h3 class="font-cute mb-4"><i class="fas fa-check-square mr-2"></i>行前準備</h3>
+                <div id="prep-list" class="space-y-3">
+                    </div>
+            </div>
+
+            <div class="glass-card p-5">
+                <h3 class="font-cute mb-2"><i class="fas fa-sticky-note mr-2"></i>個人備忘錄</h3>
+                <textarea id="memo-input" rows="4" class="w-full p-3 rounded-2xl border border-pink-100 text-sm mb-2" placeholder="貼上網址或碎碎念..."></textarea>
+                <div id="memo-links" class="flex flex-wrap gap-2 mb-4"></div>
+                <button onclick="saveMemo()" class="w-full bg-[#B9E9FF] text-[#5A8DA5] py-2 rounded-xl font-bold btn-cute">儲存備忘錄</button>
+            </div>
+        </section>
+
+        <section id="info" class="tab-content">
+            <div class="glass-card p-5 space-y-4">
+                <div class="flex items-center justify-between p-3 bg-white/60 rounded-2xl">
+                    <span>🇯🇵 日本氣象廳預報</span>
+                    <a href="https://www.jma.go.jp/bosai/forecast/#area_code=230000" target="_blank" class="text-blue-400 font-bold underline">查看</a>
+                </div>
+                <div class="p-4 bg-red-50 rounded-2xl border border-red-100">
+                    <h4 class="font-cute text-red-500 mb-2">緊急聯絡</h4>
+                    <ul class="text-sm space-y-1">
+                        <li>警察局：110</li>
+                        <li>救護車：119</li>
+                        <li>台北駐大阪經濟文化辦事處：+81-6-6443-8481</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-purple-50 rounded-2xl border border-purple-100">
+                    <h4 class="font-cute text-purple-500 mb-2">旅遊小提醒</h4>
+                    <p class="text-xs leading-relaxed">
+                        1. 肉類製品（火腿、泡麵含肉塊）禁止攜帶出入境。<br>
+                        2. 日本室內全面禁菸，請至吸菸區。<br>
+                        3. 支付寶/PayPay 在名古屋很普及，但現金還是要帶。
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-4 left-4 right-4 h-16 glass-card border-none shadow-2xl flex items-center justify-around px-2 z-50">
+        <button onclick="switchTab('plan', this)" class="nav-btn text-[#FF85A1] flex flex-col items-center">
+            <i class="fas fa-map-marked-alt text-xl"></i><span class="text-[10px]">PLAN</span>
+        </button>
+        <button onclick="switchTab('guide', this)" class="nav-btn text-gray-400 flex flex-col items-center">
+            <i class="fas fa-book-open text-xl"></i><span class="text-[10px]">GUIDE</span>
+        </button>
+        <button onclick="switchTab('wallet', this)" class="nav-btn text-gray-400 flex flex-col items-center">
+            <i class="fas fa-wallet text-xl"></i><span class="text-[10px]">WALLET</span>
+        </button>
+        <button onclick="switchTab('lists', this)" class="nav-btn text-gray-400 flex flex-col items-center">
+            <i class="fas fa-list-ul text-xl"></i><span class="text-[10px]">LISTS</span>
+        </button>
+        <button onclick="switchTab('info', this)" class="nav-btn text-gray-400 flex flex-col items-center">
+            <i class="fas fa-info-circle text-xl"></i><span class="text-[10px]">INFO</span>
+        </button>
+    </nav>
+
+    <script>
+        // --- 核心變數 ---
+        let expenses = JSON.parse(localStorage.getItem('travel_expenses')) || [];
+        let preps = JSON.parse(localStorage.getItem('travel_preps')) || [
+            { id: 1, text: '護照', checked: false },
+            { id: 2, text: 'SIM卡', checked: false },
+            { id: 3, text: '日幣', checked: false }
+        ];
+        let memo = localStorage.getItem('travel_memo') || "";
+        let currentPhotoBase64 = "";
+
+        // --- 分頁切換 ---
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('text-[#FF85A1]');
+                b.classList.add('text-gray-400');
+            });
+            btn.classList.add('text-[#FF85A1]');
+            btn.classList.remove('text-gray-400');
+            window.scrollTo(0,0);
+        }
+
+        // --- 錢包功能 ---
+        function calculate() {
+            const input = document.getElementById('calc-input').value;
+            const resultEl = document.getElementById('calc-result');
+            try {
+                // 安全的簡單計算
+                const result = new Function('return ' + input.replace(/[^-()\d/*+.]/g, ''))();
+                const twd = Math.round(result * 0.21);
+                resultEl.innerText = `≈ NT$ ${twd.toLocaleString()}`;
+            } catch (e) {
+                resultEl.innerText = "格式錯誤";
+            }
+        }
+
+        function previewImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    // 縮圖大小控制 (避免 LocalStorage 爆掉)
+                    const scale = 300 / img.width;
+                    canvas.width = 300;
+                    canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    currentPhotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('temp-preview').src = currentPhotoBase64;
+                    document.getElementById('temp-preview').classList.remove('hidden');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addExpense() {
+            const name = document.getElementById('exp-name').value;
+            const amount = document.getElementById('exp-amount').value;
+            if (!name || !amount) return alert('請輸入品項與金額');
+
+            const item = {
+                id: Date.now(),
+                name,
+                jpy: amount,
+                twd: Math.round(amount * 0.21),
+                photo: currentPhotoBase64
+            };
+
+            expenses.unshift(item);
+            localStorage.setItem('travel_expenses', JSON.stringify(expenses));
+            renderExpenses();
+            
+            // 重設表單
+            document.getElementById('exp-name').value = "";
+            document.getElementById('exp-amount').value = "";
+            document.getElementById('exp-photo').value = "";
+            document.getElementById('temp-preview').classList.add('hidden');
+            currentPhotoBase64 = "";
+        }
+
+        function renderExpenses() {
+            const container = document.getElementById('expense-list');
+            container.innerHTML = expenses.map(exp => `
+                <div class="glass-card p-3 flex items-center gap-3 bg-white/80">
+                    ${exp.photo ? `<img src="${exp.photo}" class="w-12 h-12 rounded-lg object-cover">` : `<div class="w-12 h-12 bg-pink-50 rounded-lg flex items-center justify-center text-pink-200"><i class="fas fa-image"></i></div>`}
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">${exp.name}</p>
+                        <p class="text-[10px] opacity-60">¥${exp.jpy} / NT$${exp.twd}</p>
+                    </div>
+                    <button onclick="deleteExp(${exp.id})" class="text-red-300 p-2"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function deleteExp(id) {
+            expenses = expenses.filter(e => e.id !== id);
+            localStorage.setItem('travel_expenses', JSON.stringify(expenses));
+            renderExpenses();
+        }
+
+        // --- 清單與備忘錄 ---
+        function renderPreps() {
+            const container = document.getElementById('prep-list');
+            container.innerHTML = preps.map(p => `
+                <label class="flex items-center gap-3 bg-white/50 p-3 rounded-xl cursor-pointer">
+                    <input type="checkbox" ${p.checked ? 'checked' : ''} onchange="togglePrep(${p.id})" class="w-5 h-5 accent-pink-400">
+                    <span class="${p.checked ? 'line-through opacity-40' : ''}">${p.text}</span>
+                </label>
+            `).join('');
+        }
+
+        function togglePrep(id) {
+            const item = preps.find(p => p.id === id);
+            item.checked = !item.checked;
+            localStorage.setItem('travel_preps', JSON.stringify(preps));
+            renderPreps();
+        }
+
+        function saveMemo() {
+            const text = document.getElementById('memo-input').value;
+            localStorage.setItem('travel_memo', text);
+            extractLinks(text);
+            alert('儲存成功！');
+        }
+
+        function extractLinks(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const matches = text.match(urlRegex) || [];
+            const container = document.getElementById('memo-links');
+            container.innerHTML = matches.map(url => `
+                <a href="${url}" target="_blank" class="bg-blue-100 text-blue-500 text-xs px-3 py-1 rounded-full flex items-center">
+                    <i class="fas fa-link mr-1"></i>${url.substring(0, 20)}...
+                </a>
+            `).join('');
+        }
+
+        // --- 初始化 ---
+        window.onload = () => {
+            renderExpenses();
+            renderPreps();
+            document.getElementById('memo-input').value = memo;
+            extractLinks(memo);
+        };
+    </script>
 </body>
 </html>
